@@ -48,3 +48,26 @@ class Message(SQLModel):
 # Token payload
 class TokenPayload(SQLModel):
     sub: str | None = None
+
+
+# Podcast models
+class PodcastBase(SQLModel):
+    title: str = Field(max_length=500)
+    author: str | None = Field(default=None, max_length=255)
+    description: str | None = Field(default=None)
+    cover_url: str | None = Field(default=None, max_length=2000)
+    feed_url: str = Field(unique=True, index=True, max_length=2000)
+    is_featured: bool = Field(default=False, index=True)
+
+
+class Podcast(PodcastBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class PodcastPublic(PodcastBase):
+    id: uuid.UUID
+
+
+class PodcastList(SQLModel):
+    podcasts: list[PodcastPublic]
+    count: int

@@ -7,7 +7,7 @@ from sqlmodel import SQLModel, create_engine
 from app.core.config import settings
 
 # Import all models to register them with SQLModel
-from app.models import User  # noqa: F401
+from app.models import User, Podcast  # noqa: F401
 
 config = context.config
 
