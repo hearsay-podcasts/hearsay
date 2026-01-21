@@ -26,8 +26,15 @@ export interface Podcast {
 	author: string | null;
 	description: string | null;
 	cover_url: string | null;
-	feed_url: string;
+	feed_url: string | null;
 	is_featured: boolean;
+	// Listen Notes fields
+	listenotes_id: string | null;
+	publisher: string | null;
+	total_episodes: number | null;
+	listen_score: number | null;
+	genre_ids: string | null;
+	listenotes_url: string | null;
 }
 
 export interface PodcastList {

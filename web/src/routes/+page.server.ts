@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	let popularPodcasts: PodcastList = { podcasts: [], count: 0 };
 
 	try {
-		const response = await fetch(`${API_URL}/podcasts/popular?limit=4`);
+		const response = await fetch(`${API_URL}/podcasts/popular?limit=6`);
 		if (response.ok) {
 			popularPodcasts = await response.json();
 		}

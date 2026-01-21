@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
@@ -56,8 +57,15 @@ class PodcastBase(SQLModel):
     author: str | None = Field(default=None, max_length=255)
     description: str | None = Field(default=None)
     cover_url: str | None = Field(default=None, max_length=2000)
-    feed_url: str = Field(unique=True, index=True, max_length=2000)
+    feed_url: str | None = Field(default=None, unique=True, index=True, max_length=2000)
     is_featured: bool = Field(default=False, index=True)
+    # Listen Notes fields
+    listenotes_id: str | None = Field(default=None, unique=True, index=True, max_length=255)
+    publisher: str | None = Field(default=None, max_length=500)
+    total_episodes: int | None = Field(default=None)
+    listen_score: int | None = Field(default=None)
+    genre_ids: str | None = Field(default=None, max_length=500)
+    listenotes_url: str | None = Field(default=None, max_length=2000)
 
 
 class Podcast(PodcastBase, table=True):
@@ -71,3 +79,10 @@ class PodcastPublic(PodcastBase):
 class PodcastList(SQLModel):
     podcasts: list[PodcastPublic]
     count: int
+
+
+# Cache metadata for tracking API data freshness
+class CacheMetadata(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    cache_key: str = Field(unique=True, index=True, max_length=255)
+    last_fetched_at: datetime = Field(default_factory=datetime.utcnow)

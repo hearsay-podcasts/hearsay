@@ -52,6 +52,9 @@ class Settings(BaseSettings):
             self.FRONTEND_HOST
         ]
 
+    # Listen Notes API
+    LISTENOTES_API_KEY: str | None = None
+
     # Database
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432

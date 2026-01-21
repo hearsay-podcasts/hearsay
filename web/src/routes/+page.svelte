@@ -133,6 +133,9 @@
 							</div>
 						{/if}
 						<div class="card-shine"></div>
+						{#if podcast.listen_score}
+							<div class="listen-score-badge">{podcast.listen_score}</div>
+						{/if}
 					</div>
 					<div class="card-meta">
 						<h3 class="card-title">{podcast.title}</h3>
@@ -646,6 +649,7 @@
 	}
 
 	.podcast-card {
+		min-width: 0;
 		opacity: 0;
 		animation: cardIn 0.6s var(--ease-out-expo) forwards;
 		animation-delay: calc(0.1s + var(--i) * 0.08s);
@@ -703,6 +707,20 @@
 
 	.podcast-card:hover .card-shine {
 		opacity: 1;
+	}
+
+	.listen-score-badge {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		background: var(--color-accent);
+		color: var(--color-cream);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		padding: 0.25rem 0.5rem;
+		border-radius: 100px;
+		box-shadow: 0 2px 8px rgba(196, 69, 54, 0.3);
+		z-index: 2;
 	}
 
 	.card-placeholder {

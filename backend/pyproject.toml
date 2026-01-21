@@ -14,6 +14,7 @@ dependencies = [
     "email-validator>=2.2.0",
     "alembic>=1.14.0",
     "tenacity>=9.0.0",
+    "podcast-api>=1.1.6",
 ]
 
 [project.optional-dependencies]
