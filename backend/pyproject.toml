@@ -15,13 +15,13 @@ dependencies = [
     "alembic>=1.14.0",
     "tenacity>=9.0.0",
     "podcast-api>=1.1.6",
+    "httpx>=0.28.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",
-    "httpx>=0.28.0",
     "ruff>=0.8.0",
 ]
 
