@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime, timedelta
 
@@ -7,6 +8,7 @@ from sqlmodel import select
 from app.api.deps import SessionDep
 from app.core.config import settings
 from app.models import CacheMetadata, Podcast, PodcastList, PodcastPublic
+from app.services.itunes import ITunesArtworkService
 from app.services.listenotes import ListenNotesService
 
 logger = logging.getLogger(__name__)
@@ -61,12 +63,20 @@ def refresh_best_podcasts_cache(session: SessionDep) -> bool:
         logger.error("Failed to fetch podcasts from Listen Notes API")
         return False
 
+    # Fetch iTunes artwork for each podcast
+    artwork_map = _fetch_itunes_artwork(podcasts_data)
+
     # Upsert podcasts
     for data in podcasts_data:
         # Check if podcast already exists by listenotes_id
         existing = session.exec(
             select(Podcast).where(Podcast.listenotes_id == data.listenotes_id)
         ).first()
+
+        artwork = artwork_map.get(data.listenotes_id)
+        cover_url_sm = artwork["sm"] if artwork else data.cover_url
+        cover_url_md = artwork["md"] if artwork else data.cover_url
+        cover_url_lg = artwork["lg"] if artwork else data.cover_url
 
         if existing:
             # Update existing podcast
@@ -80,6 +90,10 @@ def refresh_best_podcasts_cache(session: SessionDep) -> bool:
             existing.listen_score = data.listen_score
             existing.genre_ids = data.genre_ids
             existing.listenotes_url = data.listenotes_url
+            existing.itunes_id = data.itunes_id
+            existing.cover_url_sm = cover_url_sm
+            existing.cover_url_md = cover_url_md
+            existing.cover_url_lg = cover_url_lg
             existing.is_featured = True
         else:
             # Create new podcast
@@ -95,6 +109,10 @@ def refresh_best_podcasts_cache(session: SessionDep) -> bool:
                 listen_score=data.listen_score,
                 genre_ids=data.genre_ids,
                 listenotes_url=data.listenotes_url,
+                itunes_id=data.itunes_id,
+                cover_url_sm=cover_url_sm,
+                cover_url_md=cover_url_md,
+                cover_url_lg=cover_url_lg,
                 is_featured=True,
             )
             session.add(podcast)
@@ -103,6 +121,31 @@ def refresh_best_podcasts_cache(session: SessionDep) -> bool:
     update_cache_timestamp(session, CACHE_KEY_BEST_PODCASTS)
     logger.info(f"Successfully refreshed best podcasts cache with {len(podcasts_data)} podcasts")
     return True
+
+
+def _fetch_itunes_artwork(
+    podcasts_data: list,
+) -> dict[str, dict[str, str]]:
+    """
+    Fetch iTunes artwork URLs for a list of podcasts.
+    Returns a dict mapping listenotes_id -> artwork URLs dict.
+    """
+    async def _fetch_all():
+        itunes_service = ITunesArtworkService()
+        results = {}
+        try:
+            for data in podcasts_data:
+                artwork = await itunes_service.get_artwork_urls(
+                    itunes_id=data.itunes_id, title=data.title
+                )
+                if artwork:
+                    results[data.listenotes_id] = artwork
+                await asyncio.sleep(0.5)  # Rate limit protection
+        finally:
+            await itunes_service.close()
+        return results
+
+    return asyncio.run(_fetch_all())
 
 
 @router.get("/popular", response_model=PodcastList)
