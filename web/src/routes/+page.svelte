@@ -43,9 +43,9 @@
 		<div class="hero-artwork">
 			<div class="artwork-frame">
 				<div class="artwork-shadow"></div>
-				{#if featuredPodcast.cover_url}
+				{#if featuredPodcast.cover_url_lg || featuredPodcast.cover_url}
 					<img
-						src={featuredPodcast.cover_url}
+						src={featuredPodcast.cover_url_lg || featuredPodcast.cover_url}
 						alt={featuredPodcast.title}
 						class="artwork-image"
 					/>
@@ -125,8 +125,8 @@
 			{#each gridPodcasts as podcast, i (podcast.id)}
 				<article class="podcast-card" style="--i: {i}">
 					<div class="card-artwork">
-						{#if podcast.cover_url}
-							<img src={podcast.cover_url} alt={podcast.title} />
+						{#if podcast.cover_url_md || podcast.cover_url}
+							<img src={podcast.cover_url_md || podcast.cover_url} alt={podcast.title} />
 						{:else}
 							<div class="card-placeholder">
 								<span>{podcast.title?.charAt(0) ?? '?'}</span>

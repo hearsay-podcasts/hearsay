@@ -35,6 +35,11 @@ export interface Podcast {
 	listen_score: number | null;
 	genre_ids: string | null;
 	listenotes_url: string | null;
+	// iTunes artwork fields
+	itunes_id: string | null;
+	cover_url_sm: string | null;
+	cover_url_md: string | null;
+	cover_url_lg: string | null;
 }
 
 export interface PodcastList {
