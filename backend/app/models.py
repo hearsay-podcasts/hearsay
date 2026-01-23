@@ -66,6 +66,11 @@ class PodcastBase(SQLModel):
     listen_score: int | None = Field(default=None)
     genre_ids: str | None = Field(default=None, max_length=500)
     listenotes_url: str | None = Field(default=None, max_length=2000)
+    # iTunes artwork fields
+    itunes_id: str | None = Field(default=None, max_length=255)
+    cover_url_sm: str | None = Field(default=None, max_length=2000)
+    cover_url_md: str | None = Field(default=None, max_length=2000)
+    cover_url_lg: str | None = Field(default=None, max_length=2000)
 
 
 class Podcast(PodcastBase, table=True):
