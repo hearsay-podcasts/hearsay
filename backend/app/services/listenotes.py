@@ -20,6 +20,7 @@ class PodcastData:
     listen_score: int | None
     genre_ids: str | None
     listenotes_url: str | None
+    itunes_id: str | None
 
 
 class ListenNotesService:
@@ -67,6 +68,10 @@ class ListenNotesService:
                 if feed_url and not feed_url.startswith(("http://", "https://")):
                     feed_url = None
 
+                itunes_id = podcast.get("itunes_id")
+                if itunes_id is not None:
+                    itunes_id = str(itunes_id)
+
                 podcasts.append(
                     PodcastData(
                         listenotes_id=podcast.get("id"),
@@ -79,6 +84,7 @@ class ListenNotesService:
                         listen_score=listen_score,
                         genre_ids=genre_ids_str,
                         listenotes_url=podcast.get("listennotes_url"),
+                        itunes_id=itunes_id,
                     )
                 )
 
