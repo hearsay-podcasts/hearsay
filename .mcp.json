@@ -1,9 +1,14 @@
 {
-	"mcpServers": {
-		"svelte": {
-			"type": "stdio",
-			"command": "cmd",
-			"args": ["/c", "npx", "-y", "@sveltejs/mcp"]
-		}
-	}
+    "mcpServers": {
+        "svelte": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@sveltejs/mcp"],
+            "env": {}
+        },
+        "shadcn-svelte": {
+            "type": "sse",
+            "url": "http://localhost:7423/sse"
+        }
+    }
 }

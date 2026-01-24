@@ -1,20 +1,67 @@
 services:
-  db:
-    image: postgres:17
-    container_name: hearsay-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hearsay
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    db:
+        image: postgres:17
+        container_name: hearsay-postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: hearsay
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+    shadcn-mcp-server:
+        build:
+            context: https://github.com/Jpisnice/shadcn-ui-mcp-server.git
+        container_name: shadcn-mcp-server
+        ports:
+            - "7423:7423"
+        environment:
+            - MCP_TRANSPORT_MODE=sse
+            - MCP_HOST=0.0.0.0
+            - MCP_PORT=7423
+            - MCP_CORS_ORIGINS=*
+            - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
+        command:
+            [
+                "npm",
+                "start",
+                "--",
+                "--mode",
+                "sse",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "7423",
+                "--framework",
+                "svelte",
+            ]
+        networks:
+            - mcp-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:7423/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 512M
+                reservations:
+                    cpus: "0.1"
+                    memory: 128M
+
+networks:
+    mcp-network:
+        driver: bridge
 
 volumes:
-  postgres_data:
+    postgres_data:
